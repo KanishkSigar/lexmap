@@ -1,258 +1,315 @@
-# Legal Case Reasoning Explorer
+# Legal Case Reasoning Explorer — Lex.ai
 
-A full-stack platform that converts unstructured legal judgment text into an interactive reasoning graph.
-
-The system helps users move from passive reading to active legal reasoning analysis by identifying key argumentative units (claims, precedents, conclusions) and showing how they connect.
+A full-stack platform that transforms unstructured legal judgment text into interactive reasoning graphs, with an AI-powered legal assistant built in.
 
 ## Table of Contents
 
-- [Project Overview](#project-overview)
-- [Core Value Proposition (USP)](#core-value-proposition-usp)
-- [Key Features](#key-features)
-- [Current Completion Status](#current-completion-status)
-- [Major Milestones Completed](#major-milestones-completed)
-- [Major Milestones Pending](#major-milestones-pending)
+- [Overview](#overview)
+- [Features](#features)
 - [System Architecture](#system-architecture)
-- [Reasoning Model (MVP)](#reasoning-model-mvp)
-- [Data Contract](#data-contract)
+- [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
-- [Technology Stack](#technology-stack)
 - [API Reference](#api-reference)
-- [Local Setup and Run Instructions](#local-setup-and-run-instructions)
+- [Environment Variables](#environment-variables)
+- [Local Setup & Run](#local-setup--run)
 - [How to Use](#how-to-use)
-- [Known Limitations (Current Version)](#known-limitations-current-version)
-- [Roadmap](#roadmap)
-- [Testing and Validation Status](#testing-and-validation-status)
-- [Scope](#scope)
-- [Documentation](#documentation)
-- [Future Vision](#future-vision)
-- [License](#license)
+- [Reasoning Model](#reasoning-model)
+- [Data Contract](#data-contract)
+- [Known Limitations](#known-limitations)
 
-## Project Overview
+---
 
-Legal judgments are usually long, dense, and difficult to decode quickly. While most legal platforms provide document retrieval and keyword search, they do not expose the chain of reasoning in a visual and structured way.
+## Overview
 
-Legal Case Reasoning Explorer addresses this gap by:
-- Taking raw judgment text as input.
-- Extracting reasoning units through a rule-based engine.
-- Building a graph model of argumentative relations.
-- Rendering the result as both JSON and an interactive visual graph.
+Legal judgments are dense and hard to decode quickly. **Lex.ai** addresses this by:
 
-## Core Value Proposition (USP)
+- Accepting raw judgment text (paste or PDF upload).
+- Running a rule-based NLP engine to classify every sentence into one of four node types: **claim**, **precedent**, **reasoning**, or **conclusion**.
+- Building a directed acyclic graph of argumentative relations.
+- Rendering the result as an interactive visual graph or raw JSON.
+- Providing **Lex**, a context-aware AI legal assistant that already knows the loaded judgment.
 
-### 1. Reasoning-first legal exploration
-Instead of only reading final outcomes, users can inspect the logic that leads to those outcomes.
+---
 
-### 2. Text-to-graph transformation
-The system converts plain legal text directly into a structured graph representation usable for learning, analysis, and comparison.
+## Features
 
-### 3. Dual interpretation modes
-Users can switch between:
-- JSON mode (for technical inspection and debugging)
-- Graph mode (for intuitive visual understanding)
+| Feature | Status |
+|---|---|
+| Paste text or upload PDF (up to 5 MB) | Complete |
+| 4-type NLP extraction engine (enhanced regex + legal abbreviation handling) | Complete |
+| Interactive reasoning graph (React Flow + Dagre auto-layout) | Complete |
+| JSON output view with toggle | Complete |
+| Lex AI legal assistant (Groq LLM, context-aware) | Complete |
+| JWT session authentication (name + email) | Complete |
+| Protected routes with auto-redirect | Complete |
+| PDF text extraction (pdfjs-dist) | Complete |
+| Health check endpoint | Complete |
 
-### 4. Educational and practical utility
-Useful for:
-- Law students understanding judicial logic
-- Researchers analyzing argument patterns
-- Early-stage legal-tech prototyping
-
-## Key Features
-
-### Implemented Features
-- Text input interface for legal judgment content.
-- Backend API endpoint for processing legal text.
-- Rule-based sentence classification into:
-  - claim
-  - precedent
-  - conclusion
-- Graph construction logic with typed edges:
-  - supports (claim -> conclusion)
-  - cites (conclusion -> precedent)
-- Interactive graph visualization using React Flow.
-- Automatic node layout using Dagre.
-- JSON output view for full graph payload.
-- Basic error handling for invalid input and server failures.
-
-### Planned Features
-- Persistent database storage (PostgreSQL).
-- Authentication and user history.
-- Case file upload (PDF).
-- Graph export as image/PDF.
-- Enhanced NLP-based extraction.
-
-## Current Completion Status
-
-Overall project status is approximately 40% complete (MVP foundation complete).
-
-- Phase 1: Core foundation implemented
-- Phase 2: In progress/planned
-- Phase 3: Advanced capabilities pending
-
-## Major Milestones Completed
-
-1. Monorepo-level separation of frontend and backend services.
-2. Express server with CORS and JSON request parsing.
-3. Processing API route: POST /api/process.
-4. Reasoning engine (regex/rule-based) for sentence-level extraction.
-5. Graph builder that maps extracted nodes into a case graph structure.
-6. Basic models for Node, Edge, and CaseGraph.
-7. React + Vite frontend scaffold with TypeScript.
-8. User input panel and process trigger workflow.
-9. JSON graph output panel.
-10. React Flow visualization with Dagre auto-layout.
-11. View toggle between JSON and Graph visualization.
-
-## Major Milestones Pending
-
-1. Database integration and schema design (PostgreSQL).
-2. Case persistence and retrieval APIs.
-3. Authentication and user-specific graph history.
-4. PDF upload and parsing pipeline.
-5. More advanced NLP (beyond keyword regex).
-6. Smarter relation extraction (context-aware, not full layer linking).
-7. Export features (PDF/Image snapshots of graph).
-8. Test suite coverage (unit + integration + UI tests).
-9. Deployment and environment hardening.
+---
 
 ## System Architecture
 
-### High-Level Components
-- Frontend: React + TypeScript + Vite
-- Backend: Node.js + Express
-- Visualization: React Flow + Dagre
-- Database: Planned (PostgreSQL)
+```
+┌─────────────────────────────────────────┐
+│                Browser                  │
+│  Landing Page (/)  ──►  /app (protected)│
+│  JWT auth check via ProtectedRoute      │
+└──────────────┬──────────────────────────┘
+               │ HTTP (Axios)
+               ▼
+┌─────────────────────────────────────────┐
+│         Express Backend (:5000)         │
+│                                         │
+│  POST /api/login       → JWT issue      │
+│  GET  /api/verify      → token check    │
+│  POST /api/process     → NLP + graph    │
+│  POST /api/upload-pdf  → PDF extract    │
+│  POST /api/chat        → Groq LLM       │
+│  GET  /api/health      → status         │
+└─────────────────────────────────────────┘
+```
 
 ### Data Flow
-1. User pastes legal judgment text in frontend.
-2. Frontend sends POST request to backend endpoint.
-3. Backend reasoning engine extracts typed nodes.
-4. Graph builder creates edges and returns graph JSON.
-5. Frontend renders output in JSON or Graph mode.
 
-## Reasoning Model (MVP)
+1. User signs in with name and email → receives a 24-hour JWT.
+2. User pastes judgment text or uploads a PDF.
+3. Frontend `POST /api/process` → backend reasoning engine classifies sentences → graph builder constructs nodes and edges → JSON returned.
+4. Frontend renders the result as a React Flow graph or raw JSON.
+5. Lex AI chat is opened → `POST /api/chat` with the full judgment text and graph context → Groq LLM answers questions about the loaded case.
 
-### Sentence Splitting
-Current splitting pattern:
-- /[^.!?]+[.!?]+/g
+---
 
-### Classification Logic
-A sentence is classified by keyword matching with priority:
-- conclusion > claim > precedent
+## Tech Stack
 
-Patterns currently used:
-- claim: argued, claimed, contended, submitted
-- precedent: vs., cited, relied on, referred to
-- conclusion: held that, thus, therefore, concluded
+### Frontend
 
-### Edge Construction Rules
-- supports: each claim connects to each conclusion
-- cites: each conclusion connects to each precedent
+| Library | Version | Purpose |
+|---|---|---|
+| React | 18 | UI framework |
+| TypeScript | 5 | Type safety |
+| Vite | 5 | Dev server and bundler |
+| React Router DOM | 7 | Client-side routing |
+| React Flow (reactflow) | 11 | Interactive graph rendering |
+| Dagre | 0.8.5 | Automatic DAG layout |
+| Axios | 1.6 | HTTP client |
 
-This is intentionally simple for MVP demonstration and will be refined in future phases.
+### Backend
 
-## Data Contract
+| Library | Version | Purpose |
+|---|---|---|
+| Node.js | LTS | Runtime |
+| Express | 4 | HTTP server |
+| groq-sdk | 1.1 | Groq API (llama-3.3-70b-versatile) |
+| jsonwebtoken | 9 | JWT auth |
+| multer | 2 | PDF file upload |
+| pdfjs-dist | 5 | PDF text extraction |
+| compromise | 14 | NLP support |
+| dotenv | 17 | Environment config |
+| cors | 2 | Cross-origin requests |
+| body-parser | 1 | JSON request parsing |
 
-Backend response format:
+---
 
+## Project Structure
+
+```
+legal-reasoning-explorer/
+├── backend/
+│   ├── models/
+│   │   ├── nodeModel.js         # Node data model
+│   │   ├── edgeModel.js         # Edge data model
+│   │   └── caseModel.js         # Case graph model
+│   ├── routes/
+│   │   ├── process.js           # POST /api/process
+│   │   ├── chat.js              # POST /api/chat (Lex AI)
+│   │   └── upload.js            # POST /api/upload-pdf
+│   ├── services/
+│   │   ├── reasoningEngine.js   # Sentence classification (4 node types)
+│   │   └── graphBuilder.js      # Node-to-edge graph construction
+│   ├── db/
+│   │   ├── index.js
+│   │   ├── migrate.js
+│   │   └── schema.sql
+│   ├── .env                     # Environment variables (not committed)
+│   ├── server.js                # Express entry point
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── InputSection.tsx       # Text input + PDF upload
+│   │   │   ├── ResultSection.tsx      # JSON / Graph output panel
+│   │   │   ├── GraphVisualizer.tsx    # React Flow graph
+│   │   │   ├── NodeLegend.tsx         # Graph legend
+│   │   │   ├── ChatBot.tsx            # Lex AI chat panel
+│   │   │   ├── CaseHistoryPanel.tsx   # Case history sidebar
+│   │   │   └── ProtectedRoute.tsx     # JWT route guard
+│   │   ├── services/
+│   │   │   └── api.ts                 # Axios API client
+│   │   ├── App.tsx                    # Router + routes
+│   │   ├── LandingPage.tsx            # Public landing page
+│   │   ├── MainApp.tsx                # Protected main explorer
+│   │   ├── index.css
+│   │   └── main.tsx
+│   ├── index.html
+│   ├── vite.config.ts
+│   └── package.json
+├── docs/
+│   ├── architecture.md
+│   ├── project_synopsis.md
+│   ├── reasoning-model.md
+│   └── roadmap.md
+└── README.md
+```
+
+---
+
+## API Reference
+
+All endpoints run at `http://localhost:5000`.
+
+### `POST /api/login`
+
+Issues a 24-hour JWT token.
+
+**Request**
+```json
+{ "name": "Jane Doe", "email": "jane@example.com" }
+```
+
+**Response**
+```json
+{ "token": "<jwt>", "user": { "name": "Jane Doe", "email": "jane@example.com" } }
+```
+
+---
+
+### `GET /api/verify`
+
+Validates the current token.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response** `200` — `{ "valid": true, "user": { ... } }` or `401`/`403` on failure.
+
+---
+
+### `POST /api/process`
+
+Runs the NLP reasoning engine and returns the case graph.
+
+**Request**
+```json
+{ "text": "Full legal judgment text here..." }
+```
+
+**Response** `200`
 ```json
 {
   "nodes": [
-    {
-      "id": "node-0",
-      "type": "claim",
-      "text": "The appellant argued that ...",
-      "metadata": {}
-    }
+    { "id": "node-0", "type": "claim",      "text": "The appellant argued that..." },
+    { "id": "node-3", "type": "conclusion", "text": "The court held that..."       }
   ],
   "edges": [
-    {
-      "source": "node-0",
-      "target": "node-3",
-      "relation": "supports"
-    }
+    { "source": "node-0", "target": "node-3", "relation": "supports" }
   ]
 }
 ```
 
-## Project Structure
+**Errors:** `400` if text is missing · `500` on processing failure.
 
-```text
-legal-reasoning-explorer/
-  backend/
-    models/
-    routes/
-    services/
-    server.js
-    package.json
-  frontend/
-    src/
-      components/
-      services/
-      App.tsx
-    package.json
-  docs/
-    architecture.md
-    project_synopsis.md
-    reasoning-model.md
-    roadmap.md
+---
+
+### `POST /api/upload-pdf`
+
+Extracts plain text from an uploaded PDF file.
+
+**Request:** `multipart/form-data` with field `pdf` (max 5 MB).
+
+**Response** `200`
+```json
+{ "text": "...", "pages": 12, "filename": "judgment.pdf", "size": 204800 }
 ```
 
-## Technology Stack
+**Errors:** `400` no file · `413` file too large · `422` scanned/image PDF · `500` parse error.
 
-### Frontend
-- React 18
-- TypeScript
-- Vite
-- Axios
-- React Flow
-- Dagre
+---
 
-### Backend
-- Node.js
-- Express
-- CORS
-- body-parser
+### `POST /api/chat`
 
-### Planned
-- PostgreSQL
-- Advanced NLP stack (library/service based)
+Sends a message to Lex AI. Context (judgment text + graph) is injected into the LLM system prompt automatically.
 
-## API Reference
-
-### Endpoint
-- Method: POST
-- URL: http://localhost:5000/api/process
-
-### Request Body
-
+**Request**
 ```json
 {
-  "text": "Full legal judgment text here..."
+  "messages": [{ "role": "user", "content": "What was the main claim?" }],
+  "context": {
+    "judgmentText": "...",
+    "graphData": { "nodes": [...], "edges": [...] }
+  }
 }
 ```
 
-### Success Response
-- HTTP 200 with graph JSON object (nodes, edges).
+**Response** `200` — `{ "reply": "..." }`
 
-### Error Responses
-- HTTP 400 if text is missing.
-- HTTP 500 for internal processing failure.
+---
 
-## Local Setup and Run Instructions
+### `GET /api/health`
+
+```json
+{ "status": "ok", "phase": 2, "timestamp": "2026-04-21T..." }
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file inside the `backend/` directory:
+
+```env
+PORT=5000
+GROQ_API_KEY=your_groq_api_key_here
+JWT_SECRET=your_secret_key_here
+```
+
+| Variable | Required | Description |
+|---|---|---|
+| `GROQ_API_KEY` | **Yes** | Groq API key for the Lex AI assistant. Get one free at [console.groq.com](https://console.groq.com). |
+| `JWT_SECRET` | No | Secret used to sign JWTs. Defaults to a built-in value if omitted. Set one for production. |
+| `PORT` | No | Backend port. Defaults to `5000`. |
+
+---
+
+## Local Setup & Run
 
 ### Prerequisites
-- Node.js (LTS recommended)
-- npm
 
-### 1. Clone repository
+- **Node.js** LTS (v18 or newer)
+- **npm**
+- A **Groq API key** (free at [console.groq.com](https://console.groq.com))
+
+---
+
+### 1. Clone the repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/KanishkSigar/legal-reasoning-explorer.git
 cd legal-reasoning-explorer
 ```
 
-### 2. Start backend
+---
+
+### 2. Configure environment
+
+```bash
+cd backend
+cp .env.example .env   # or create .env manually
+```
+
+Edit `backend/.env` and set `GROQ_API_KEY` to your key.
+
+---
+
+### 3. Start the backend
 
 ```bash
 cd backend
@@ -260,11 +317,19 @@ npm install
 npm start
 ```
 
-Backend runs at:
-- http://localhost:5000
+Backend starts at **http://localhost:5000**.  
+You should see:
 
-### 3. Start frontend
-Open a new terminal:
+```
+[Server] Legal Case Reasoning Explorer backend running on http://localhost:5000
+[Server] Phase 2 – Enhanced NLP engine enabled.
+```
+
+---
+
+### 4. Start the frontend
+
+Open a **second terminal**:
 
 ```bash
 cd frontend
@@ -272,81 +337,89 @@ npm install
 npm run dev
 ```
 
-Frontend runs at Vite default URL (typically):
-- http://localhost:5173
+Frontend starts at **http://localhost:5173** (Vite default).
+
+---
+
+### 5. Open in browser
+
+Navigate to **http://localhost:5173**.
+
+---
 
 ## How to Use
 
-1. Launch backend and frontend servers.
-2. Open frontend in browser.
-3. Paste or type legal judgment text in the input area.
-4. Click Process Text.
-5. Explore output:
-   - Graph View for visual reasoning map
-   - JSON View for raw structured result
+1. **Sign in** — Enter your name and email on the landing page. A 24-hour session token is issued.
+2. **Input a judgment** — Paste judgment text into the text area, or click the upload button to drop a PDF (up to 5 MB).
+3. **Analyze** — Click **Analyze**. The NLP engine processes the text and returns a reasoning graph.
+4. **Explore the graph** — Switch to **Graph View** to see the interactive DAG. Click any node to read its full text. Use the toggle to switch to **JSON View** for the raw payload.
+5. **Ask Lex** — Click the chat button to open the Lex AI assistant. It has already read your judgment and graph — ask anything about the case, the claims, precedents, or legal concepts involved.
+6. **Sign out** — Use the Sign out button in the top-right header.
 
-## Known Limitations (Current Version)
+---
 
-- Rule-based extraction can miss nuanced legal language.
-- Sentence splitting is basic and may not handle all legal abbreviations perfectly.
-- Relation mapping is currently many-to-many by type group, not context-sensitive.
-- No persistent storage yet (results are session-only).
-- No authentication or role-based access.
-- No automated tests committed yet.
+## Reasoning Model
 
-## Roadmap
+### Node Types
 
-### Phase 1 (Completed foundation)
-- Basic architecture and API
-- Rule-based extraction engine
-- Frontend input/output workflow
+| Type | Keywords / Patterns |
+|---|---|
+| `conclusion` | `held that`, `therefore`, `thus`, `accordingly`, `we conclude`, `dismissed`, `allowed`, `quashed`, `set aside`, … |
+| `reasoning` | `because`, `since`, `in view of`, `having regard to`, `it follows that`, `the court is of the opinion`, … |
+| `claim` | `argued`, `contended`, `submitted`, `alleged`, `pleaded`, `the petitioner claims`, `the appellant submits`, … |
+| `precedent` | `vs.`, `cited`, `relied on`, `referred to`, `as held in`, `in the case of`, `the ratio in`, … |
 
-### Phase 2 (Current target)
-- PostgreSQL integration
-- Improved visualization and interaction
-- Enhanced NLP extraction quality
+**Priority order:** `conclusion` → `reasoning` → `claim` → `precedent`
 
-### Phase 3 (Advanced target)
-- Authentication and user profiles
-- PDF case upload and management
-- Export and reporting functionality
+### Edge Construction
 
-## Testing and Validation Status
+| Relation | Rule |
+|---|---|
+| `supports` | Each `claim` → each `conclusion` |
+| `cites` | Each `conclusion` → each `precedent` |
+| `leads_to` | Each `reasoning` → each `conclusion` |
 
-Current validation is primarily manual:
-- API behavior tested through frontend integration.
-- Graph rendering validated using sample legal text.
+### Sentence Splitting
 
-Pending:
-- Unit tests for reasoning engine and graph builder.
-- API integration tests for route-level reliability.
-- Frontend component tests for input and render behavior.
+Legal abbreviations (`vs.`, `no.`, `art.`, `sec.`, `hon.`, etc.) are protected from splitting by a placeholder substitution pass before the sentence boundary regex runs.
 
-## Scope
+---
 
-### In Scope
-- Structured reasoning extraction from input text.
-- Graph-based legal reasoning visualization.
-- Interactive frontend for exploration.
+## Data Contract
 
-### Out of Scope (Current Project Boundary)
-- Legal outcome prediction/advice automation.
-- Nationwide legal corpus crawling.
-- Real-time legal consultation systems.
+### Graph JSON (from `/api/process`)
 
-## Documentation
+```json
+{
+  "nodes": [
+    {
+      "id": "node-0",
+      "type": "claim | precedent | reasoning | conclusion",
+      "text": "Sentence text..."
+    }
+  ],
+  "edges": [
+    {
+      "source": "node-0",
+      "target": "node-3",
+      "relation": "supports | cites | leads_to"
+    }
+  ]
+}
+```
 
-Detailed internal documents are available in the docs folder:
-- architecture.md
-- project_synopsis.md
-- reasoning-model.md
-- roadmap.md
+---
 
-## Future Vision
+## Known Limitations
 
-The long-term vision is to evolve this MVP into a robust legal informatics platform that can ingest real case documents, generate high-quality reasoning maps, and support comparison across cases for education and research.
+- Rule-based extraction can miss nuanced or uncommon legal phrasing.
+- Many-to-many edge linking by type group — not context-sensitive.
+- Scanned or image-based PDFs are not supported (text-layer PDFs only).
+- Results are session-only — no persistent database storage in the current build.
+- No automated test suite yet (manual validation only).
 
-## License
+---
 
-No license file is currently configured.
-Add a LICENSE file (for example, MIT) before public/open-source distribution.
+## Author
+
+Built by **Kanishk Sigar** · [GitHub](https://github.com/KanishkSigar/legal-reasoning-explorer)
