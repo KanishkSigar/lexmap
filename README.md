@@ -423,3 +423,7 @@ Legal abbreviations (`vs.`, `no.`, `art.`, `sec.`, `hon.`, etc.) are protected f
 ## Author
 
 Built by **Kanishk Sigar** · [GitHub](https://github.com/KanishkSigar/legal-reasoning-explorer)
+
+---
+
+_Last updated: May 2026_
