@@ -2,12 +2,7 @@
 
 A full-stack platform that transforms unstructured legal judgment text into interactive reasoning graphs, with an AI-powered legal assistant built in.
 
-## Live
-
-- **App** → https://kanishksigar.github.io/legal-reasoning-explorer/ (custom domain: http://kanishksigar.me/legal-reasoning-explorer/)
-- **Chat API (Lex)** → https://legal-reasoning-explorer.vercel.app/_/backend/api/chat
-
-The frontend (NLP, graph rendering, PDF extraction) runs entirely in the browser from GitHub Pages. Only the Lex AI chat hits the network — it's served by the Express backend deployed as a Vercel service.
+**Live app:** https://kanishksigar.github.io/legal-reasoning-explorer/
 
 ## Table of Contents
 
