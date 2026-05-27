@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import InputSection      from './components/InputSection';
 import ResultSection     from './components/ResultSection';
 import GraphVisualizer   from './components/GraphVisualizer';
@@ -21,11 +22,12 @@ function MainApp() {
     const [viewMode,   setViewMode]   = useState<'json' | 'graph'>('graph');
 
     const user = getStoredUser();
+    const navigate = useNavigate();
 
     const handleLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/';
+        navigate('/');
     };
 
     // ── Process text ─────────────────────────────────────

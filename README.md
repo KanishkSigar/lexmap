@@ -12,6 +12,7 @@ A full-stack platform that transforms unstructured legal judgment text into inte
 - [API Reference](#api-reference)
 - [Environment Variables](#environment-variables)
 - [Local Setup & Run](#local-setup--run)
+- [Deployment (GitHub Pages + Vercel)](#deployment-github-pages--vercel)
 - [How to Use](#how-to-use)
 - [Reasoning Model](#reasoning-model)
 - [Data Contract](#data-contract)
@@ -344,6 +345,58 @@ Frontend starts at **http://localhost:5173** (Vite default).
 ### 5. Open in browser
 
 Navigate to **http://localhost:5173**.
+
+---
+
+## Deployment (GitHub Pages + Vercel)
+
+Production deployment is split:
+
+- **Frontend** → GitHub Pages (`https://kanishksigar.github.io/legal-reasoning-explorer/`). The NLP engine, graph builder, and PDF extraction all run **in the browser** — no backend needed for those.
+- **Chat (Lex AI) only** → a Vercel serverless function at `api/chat.ts`. It's the only piece that still needs a server, because the Groq API key cannot ship to the browser.
+
+### 1. Deploy the chat function to Vercel
+
+```bash
+# from the repo root
+npm install                       # installs groq-sdk for the function
+npx vercel                        # link to a new Vercel project
+npx vercel env add GROQ_API_KEY   # paste your Groq key (Production scope)
+npx vercel --prod
+```
+
+Vercel prints a production URL like `https://<your-project>.vercel.app`. The chat endpoint is at `https://<your-project>.vercel.app/api/chat`.
+
+The `vercel.json` at the repo root tells Vercel **not** to build the frontend — only the `api/` folder is deployed.
+
+### 2. Set the chat URL as a GitHub Actions secret
+
+The frontend reads the chat URL from `VITE_CHAT_API_URL` at build time.
+
+1. Go to **Settings → Secrets and variables → Actions** in the GitHub repo.
+2. Create a new secret `VITE_CHAT_API_URL` with value `https://<your-project>.vercel.app/api/chat`.
+
+### 3. Enable GitHub Pages
+
+1. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+2. Push to `main`. The workflow at `.github/workflows/deploy.yml` will:
+   - `npm ci` and `npm run build` inside `frontend/`
+   - Upload `frontend/dist` as the Pages artifact
+   - Deploy to Pages
+
+The site goes live at `https://<your-username>.github.io/legal-reasoning-explorer/`.
+
+### How the deployed app differs from local dev
+
+| | Local (`npm run dev` + `npm start`) | Production (GH Pages + Vercel) |
+|---|---|---|
+| NLP processing | Backend `/api/process` (Express) | Client-side (`src/lib/reasoningEngine.ts`) |
+| PDF extraction | Backend `/api/upload-pdf` (multer + pdfjs) | Client-side (`src/lib/pdfExtractor.ts`) |
+| Lex chat | Backend `/api/chat` (Groq SDK) | Vercel function `api/chat.ts` (Groq SDK) |
+| Auth | Real JWT issued by Express | Client-side localStorage marker (soft gate) |
+| Routing | `HashRouter` (works in both) | `HashRouter` (no SPA fallback needed) |
+
+The `backend/` folder stays intact for local development — `npm start` inside it still works.
 
 ---
 

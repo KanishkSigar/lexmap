@@ -127,50 +127,6 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     return { nodes, edges };
 };
 
-// ── Column header labels ──────────────────────────────────
-const ColumnLabels = ({ nodes }: { nodes: Node[] }) => {
-    if (!nodes.length) return null;
-    const cols: Record<string, { x: number; minY: number; type: string }> = {};
-    nodes.forEach(n => {
-        const type = n.data?.nodeType;
-        if (!cols[type] || n.position.x < cols[type].x) {
-            cols[type] = { x: n.position.x, minY: n.position.y, type };
-        }
-        if (n.position.y < cols[type].minY) cols[type].minY = n.position.y;
-    });
-
-    return (
-        <>
-            {Object.values(cols).map(col => {
-                const s = TYPE_STYLES[col.type];
-                if (!s) return null;
-                return (
-                    <div key={col.type} style={{
-                        position: 'absolute',
-                        left: col.x + NODE_W / 2,
-                        top: Math.max(col.minY - 36, 8),
-                        transform: 'translateX(-50%)',
-                        background: s.tag,
-                        border: `1px solid ${s.border}33`,
-                        borderRadius: 8,
-                        padding: '3px 12px',
-                        fontSize: 10,
-                        fontWeight: 700,
-                        color: s.dot,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.6px',
-                        fontFamily: 'Inter, sans-serif',
-                        whiteSpace: 'nowrap',
-                        pointerEvents: 'none',
-                    }}>
-                        {s.label}s
-                    </div>
-                );
-            })}
-        </>
-    );
-};
-
 // ── Detail panel ──────────────────────────────────────────
 const DetailPanel = ({ node, onClose }: { node: { type: string; text: string } | null; onClose: () => void }) => {
     if (!node) return null;
