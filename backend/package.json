@@ -1,7 +1,7 @@
 {
     "name": "backend",
     "version": "2.0.0",
-    "description": "Legal Case Reasoning Explorer – Phase 2 Backend",
+    "description": "LexMap – Phase 2 Backend",
     "main": "server.js",
     "scripts": {
         "start": "node server.js",

@@ -1,8 +1,8 @@
-# Legal Case Reasoning Explorer — Lex.ai
+# LexMap
 
 A full-stack platform that transforms unstructured legal judgment text into interactive reasoning graphs, with an AI-powered legal assistant built in.
 
-**Live app:** https://kanishksigar.github.io/legal-reasoning-explorer/
+**Live app:** https://kanishksigar.github.io/lexmap/
 
 ## Table of Contents
 
@@ -116,7 +116,7 @@ Legal judgments are dense and hard to decode quickly. **Lex.ai** addresses this 
 ## Project Structure
 
 ```
-legal-reasoning-explorer/
+lexmap/
 ├── backend/
 │   ├── models/
 │   │   ├── nodeModel.js         # Node data model
@@ -295,8 +295,8 @@ JWT_SECRET=your_secret_key_here
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/KanishkSigar/legal-reasoning-explorer.git
-cd legal-reasoning-explorer
+git clone https://github.com/KanishkSigar/lexmap.git
+cd lexmap
 ```
 
 ---
@@ -324,7 +324,7 @@ Backend starts at **http://localhost:5000**.
 You should see:
 
 ```
-[Server] Legal Case Reasoning Explorer backend running on http://localhost:5000
+[Server] LexMap backend running on http://localhost:5000
 [Server] Phase 2 – Enhanced NLP engine enabled.
 ```
 
@@ -356,7 +356,7 @@ Production deployment is split across two hosts:
 
 | Piece | Host | URL |
 |---|---|---|
-| Frontend (NLP, graph, PDF, UI) | GitHub Pages | https://kanishksigar.github.io/legal-reasoning-explorer/ |
+| Frontend (NLP, graph, PDF, UI) | GitHub Pages | https://kanishksigar.github.io/lexmap/ |
 | Lex chat backend | Vercel | https://legal-reasoning-explorer.vercel.app/_/backend/api/chat |
 
 The frontend reasoning engine, graph builder, and PDF extraction all run **in the browser** — no server needed. Only the Lex AI chat hits the network, because the Groq API key cannot ship to the client.
@@ -378,7 +378,7 @@ The `vercel.json` at the repo root uses `experimentalServices` to deploy the ful
 The frontend reads the URL from `VITE_CHAT_API_URL` at build time.
 
 ```bash
-gh secret set VITE_CHAT_API_URL --repo <user>/legal-reasoning-explorer \
+gh secret set VITE_CHAT_API_URL --repo <user>/lexmap \
   --body "https://<your-project>.vercel.app/_/backend/api/chat"
 ```
 
@@ -387,7 +387,7 @@ Or via the UI: **Settings → Secrets and variables → Actions → New reposito
 ### 3. Enable GitHub Pages
 
 ```bash
-gh api -X POST "repos/<user>/legal-reasoning-explorer/pages" -f "build_type=workflow"
+gh api -X POST "repos/<user>/lexmap/pages" -f "build_type=workflow"
 ```
 
 Or **Settings → Pages → Build and deployment → Source: GitHub Actions**.
@@ -483,7 +483,7 @@ Legal abbreviations (`vs.`, `no.`, `art.`, `sec.`, `hon.`, etc.) are protected f
 
 ## Author
 
-Built by **Kanishk Sigar** · [GitHub](https://github.com/KanishkSigar/legal-reasoning-explorer)
+Built by **Kanishk Sigar** · [GitHub](https://github.com/KanishkSigar/lexmap)
 
 ---
 

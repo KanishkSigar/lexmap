@@ -174,7 +174,7 @@ const LandingPage: React.FC = () => {
                 </div>
 
                 {/* GitHub link */}
-                <a href="https://github.com/KanishkSigar/legal-reasoning-explorer" target="_blank" rel="noopener noreferrer" style={{
+                <a href="https://github.com/KanishkSigar/lexmap" target="_blank" rel="noopener noreferrer" style={{
                     display: 'flex', alignItems: 'center', gap: 7,
                     fontSize: 13, fontWeight: 600, color: '#00393e',
                     textDecoration: 'none',
@@ -374,7 +374,7 @@ const LandingPage: React.FC = () => {
                     <div style={{ width: 28, height: 28, background: '#fff', color: '#000', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>⚖️</div>
                     <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.02em' }}>Lex.ai</span>
                 </div>
-                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>Legal Case Reasoning Explorer · Built for legal research</span>
+                <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>LexMap · Built for legal research</span>
                 <div style={{ display: 'flex', gap: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
                     <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(featRef)}>Features</span>
                     <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(howRef)}>How It Works</span>

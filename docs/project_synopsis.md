@@ -1,8 +1,8 @@
-# Synopsis: Legal Case Reasoning Explorer – A Judicial Reasoning Visualization Platform
+# Synopsis: LexMap – A Judicial Reasoning Visualization Platform
 
 ## Introduction
 
-The Legal Case Reasoning Explorer is a full-stack web application designed to transform complex legal judgments into structured and interactive reasoning graphs. Legal documents are often lengthy and difficult to interpret, making it challenging to understand how conclusions are derived from claims, precedents, and arguments.
+LexMap is a full-stack web application designed to transform complex legal judgments into structured and interactive reasoning graphs. Legal documents are often lengthy and difficult to interpret, making it challenging to understand how conclusions are derived from claims, precedents, and arguments.
 
 This project addresses the problem by converting unstructured legal text into a structured graph model. It extracts key argumentative components such as claims, precedents, reasoning steps, and conclusions, and represents them visually. The system allows users to actively explore judicial reasoning rather than passively reading dense legal content.
 
@@ -97,6 +97,6 @@ The system can be run locally using the following steps:
 
 ## Conclusion
 
-The Legal Case Reasoning Explorer has evolved into a near-complete system that effectively transforms legal text into structured reasoning graphs. With approximately 75% of development completed, the project already demonstrates strong functionality, integration, and usability.
+LexMap has evolved into a near-complete system that effectively transforms legal text into structured reasoning graphs. With approximately 75% of development completed, the project already demonstrates strong functionality, integration, and usability.
 
 The remaining work focuses on enhancing accuracy, scalability, and real-world usability. Once completed, the system will serve as a powerful tool for legal analysis, education, and research by making judicial reasoning more transparent and accessible.

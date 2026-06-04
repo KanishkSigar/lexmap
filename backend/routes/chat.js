@@ -5,7 +5,7 @@ const router  = express.Router();
 
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const BASE_PROMPT = `You are Lex, an expert AI legal assistant integrated into the Legal Case Reasoning Explorer platform. You have deep expertise in:
+const BASE_PROMPT = `You are Lex, an expert AI legal assistant integrated into LexMap platform. You have deep expertise in:
 
 - Indian constitutional law (Constitution of India, fundamental rights, directive principles, amendments)
 - Supreme Court and High Court judgments and landmark cases
@@ -27,7 +27,7 @@ function buildSystemPrompt(context) {
     if (!hasText && !hasGraph) return BASE_PROMPT;
 
     let extra = '\n\n---\n## ACTIVE EXPLORER CONTEXT\n\n';
-    extra += 'The user is working in the Legal Case Reasoning Explorer. ';
+    extra += 'The user is working in LexMap. ';
     extra += 'The following judgment and/or reasoning graph is currently loaded. ';
     extra += 'When they ask about "this case", "the claims", "the judgment", "what was decided", "explain the graph" etc., ';
     extra += 'always answer using the context below — do not ask them to paste text.\n\n';
@@ -93,7 +93,7 @@ function buildPrimingMessages(context) {
 
     if (!hasText && !hasGraph) return [];
 
-    let contextBlock = 'The user has loaded the following content into the Legal Case Reasoning Explorer:\n\n';
+    let contextBlock = 'The user has loaded the following content into LexMap:\n\n';
 
     if (hasText) {
         const truncated = judgmentText.length > 4000

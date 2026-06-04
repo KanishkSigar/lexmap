@@ -53,7 +53,7 @@ function MainApp() {
                 <div className="header-brand">
                     <div className="header-logo">⚖️</div>
                     <div>
-                        <div className="header-title">Legal Case Reasoning Explorer</div>
+                        <div className="header-title">LexMap</div>
                         <div className="header-subtitle">Judicial reasoning visualization platform</div>
                     </div>
                 </div>

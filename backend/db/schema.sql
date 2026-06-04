@@ -1,4 +1,4 @@
--- Legal Case Reasoning Explorer - Database Schema
+-- LexMap - Database Schema
 -- Run: node db/migrate.js to execute this against your PostgreSQL instance
 
 CREATE TABLE IF NOT EXISTS cases (

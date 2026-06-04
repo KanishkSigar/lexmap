@@ -54,6 +54,6 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`[Server] Legal Case Reasoning Explorer backend running on http://localhost:${PORT}`);
+    console.log(`[Server] LexMap backend running on http://localhost:${PORT}`);
     console.log(`[Server] Phase 2 – Enhanced NLP engine enabled.`);
 });
