@@ -499,6 +499,12 @@ Released under the [MIT License](LICENSE).
 
 ---
 
+## Acknowledgments
+
+Developed with the assistance of AI-powered coding tools (Claude Code) for parts of the implementation and documentation.
+
+---
+
 ## Author
 
 Built by **Kanishk Sigar** · [GitHub](https://github.com/KanishkSigar/lexmap)

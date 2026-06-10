@@ -128,3 +128,6 @@ dist
 Thumbs.db
 
 .vercel
+
+# Claude Code local config
+.claude/
