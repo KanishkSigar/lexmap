@@ -107,7 +107,7 @@ const LandingPage: React.FC = () => {
                         <div style={{ marginBottom: 28 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
                                 <div style={{ width: 36, height: 36, background: '#000', color: '#fff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⚖️</div>
-                                <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.03em' }}>Lex.ai</span>
+                                <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.03em' }}>LexMap</span>
                             </div>
                             <h2 style={{ fontSize: '1.6rem', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px 0' }}>Sign in to continue</h2>
                             <p style={{ fontSize: 14, color: '#1f6870', margin: 0 }}>Enter your name and email to start your session.</p>
@@ -164,7 +164,7 @@ const LandingPage: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                         <div style={{ width: 32, height: 32, background: '#000', color: '#fff', borderRadius: 7, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 17 }}>⚖️</div>
-                        <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.03em' }}>Lex.ai</span>
+                        <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.03em' }}>LexMap</span>
                     </div>
                     <div style={{ display: 'flex', gap: 24, fontSize: 13, fontWeight: 500, color: '#1f6870', alignItems: 'center' }}>
                         <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(featRef)}>Features</span>
@@ -372,7 +372,7 @@ const LandingPage: React.FC = () => {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <div style={{ width: 28, height: 28, background: '#fff', color: '#000', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>⚖️</div>
-                    <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.02em' }}>Lex.ai</span>
+                    <span style={{ fontSize: 15, fontWeight: 800, letterSpacing: '-0.02em' }}>LexMap</span>
                 </div>
                 <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)' }}>LexMap · Built for legal research</span>
                 <div style={{ display: 'flex', gap: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
