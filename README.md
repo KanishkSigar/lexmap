@@ -1,8 +1,14 @@
 # LexMap
 
-A full-stack platform that transforms unstructured legal judgment text into interactive reasoning graphs, with an AI-powered legal assistant built in.
+> A full-stack platform that transforms unstructured legal judgment text into interactive reasoning graphs, with an AI-powered legal assistant built in.
 
-**Live app:** https://kanishksigar.github.io/lexmap/
+[![Live](https://img.shields.io/badge/Live-kanishksigar.github.io%2Flexmap-2563EB?logo=github)](https://kanishksigar.github.io/lexmap/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-LTS-339933?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**Live app:** <https://kanishksigar.github.io/lexmap/>
 
 ## Table of Contents
 
@@ -24,7 +30,7 @@ A full-stack platform that transforms unstructured legal judgment text into inte
 
 ## Overview
 
-Legal judgments are dense and hard to decode quickly. **Lex.ai** addresses this by:
+Legal judgments are dense and hard to decode quickly. **LexMap** addresses this by:
 
 - Accepting raw judgment text (paste or PDF upload).
 - Running a rule-based NLP engine to classify every sentence into one of four node types: **claim**, **precedent**, **reasoning**, or **conclusion**.
@@ -481,10 +487,16 @@ Legal abbreviations (`vs.`, `no.`, `art.`, `sec.`, `hon.`, etc.) are protected f
 
 ---
 
+## License
+
+Released under the [MIT License](LICENSE).
+
+---
+
 ## Author
 
 Built by **Kanishk Sigar** · [GitHub](https://github.com/KanishkSigar/lexmap)
 
 ---
 
-_Last updated: May 2026_
+_Last updated: June 2026_
