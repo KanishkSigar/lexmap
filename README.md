@@ -10,6 +10,12 @@
 
 **Live app:** <https://kanishksigar.github.io/lexmap/>
 
+<p align="center">
+  <img src="docs/screenshot-graph.png" alt="LexMap turning a legal judgment into an interactive reasoning graph of claims, reasoning, conclusions, and precedents" width="900"/>
+  <br/>
+  <sub>A judgment decomposed into a typed reasoning graph — claims, reasoning, conclusions, and precedents with their relations.</sub>
+</p>
+
 ## Table of Contents
 
 - [Overview](#overview)
