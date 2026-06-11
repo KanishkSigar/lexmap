@@ -1,0 +1,9 @@
+# Normalize line endings: let Git handle EOL conversion automatically.
+* text=auto
+
+# Treat common binary/asset types as binary (no EOL conversion).
+*.png binary
+*.jpg binary
+*.gif binary
+*.pdf binary
+*.ico binary
