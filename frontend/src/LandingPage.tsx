@@ -1,40 +1,17 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login } from './services/api';
 import ChatBot from './components/ChatBot';
 
 const LandingPage: React.FC = () => {
-    const [name, setName]           = useState('');
-    const [email, setEmail]         = useState('');
-    const [loading, setLoading]     = useState(false);
-    const [error, setError]         = useState('');
     const [activeTab, setActiveTab] = useState(0);
-    const [showModal, setShowModal] = useState(false);
-    const navigate  = useNavigate();
-    const authRef   = useRef<HTMLDivElement>(null);
-    const featRef   = useRef<HTMLDivElement>(null);
-    const howRef    = useRef<HTMLDivElement>(null);
+    const navigate = useNavigate();
+    const featRef = useRef<HTMLDivElement>(null);
+    const howRef = useRef<HTMLDivElement>(null);
 
     const scrollTo = (ref: React.RefObject<HTMLDivElement>) =>
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    const handleCTA = () => scrollTo(authRef);
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!name.trim() || !email.trim()) { setError('Please provide both Name and Email.'); return; }
-        setLoading(true); setError('');
-        try {
-            const res = await login(name, email);
-            localStorage.setItem('token', res.token);
-            localStorage.setItem('user', JSON.stringify({ name: name.trim(), email: email.trim() }));
-            navigate('/app');
-        } catch (err: any) {
-            setError(err.response?.data?.error || 'Login failed. Please try again.');
-        } finally { setLoading(false); }
-    };
-
-    const closeModal = () => { setShowModal(false); setError(''); setName(''); setEmail(''); };
+    const handleCTA = () => navigate('/app');
 
     const tabs = [
         { title: 'NLP Extraction',       headline: 'Contextual Legal NLP',        desc: 'Automatically identify and extract claims, precedents, reasoning chains, and conclusions from verbose legal texts with domain-trained natural language processing.' },
@@ -82,78 +59,6 @@ const LandingPage: React.FC = () => {
     return (
         <div style={{ fontFamily: 'Inter, sans-serif', color: '#00393e', background: '#ebfdff' }}>
 
-            {/* ── LOGIN MODAL ───────────────────────────── */}
-            {showModal && (
-                <div onClick={closeModal} style={{
-                    position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)',
-                    backdropFilter: 'blur(4px)', zIndex: 1000,
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    padding: 20,
-                }}>
-                    <div onClick={e => e.stopPropagation()} style={{
-                        background: '#fff', borderRadius: 20, padding: '40px 40px 36px',
-                        width: '100%', maxWidth: 420,
-                        boxShadow: '0 24px 64px rgba(0,0,0,0.18)',
-                        animation: 'modalIn 0.2s ease-out',
-                        position: 'relative',
-                    }}>
-                        <button onClick={closeModal} style={{
-                            position: 'absolute', top: 16, right: 16,
-                            background: 'none', border: 'none', fontSize: 18,
-                            cursor: 'pointer', color: '#41848c', lineHeight: 1,
-                            padding: '4px 8px', borderRadius: 6,
-                        }}>✕</button>
-
-                        <div style={{ marginBottom: 28 }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-                                <div style={{ width: 36, height: 36, background: '#000', color: '#fff', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>⚖️</div>
-                                <span style={{ fontSize: 18, fontWeight: 800, letterSpacing: '-0.03em' }}>LexMap</span>
-                            </div>
-                            <h2 style={{ fontSize: '1.6rem', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 8px 0' }}>Sign in to continue</h2>
-                            <p style={{ fontSize: 14, color: '#1f6870', margin: 0 }}>Enter your name and email to start your session.</p>
-                        </div>
-
-                        {error && (
-                            <div style={{ padding: 12, background: '#fff1f2', color: '#e11d48', borderRadius: 10, fontSize: 13, fontWeight: 500, marginBottom: 18 }}>
-                                {error}
-                            </div>
-                        )}
-
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                            <input type="text" value={name} onChange={e => setName(e.target.value)}
-                                placeholder="Full Name" autoFocus style={S.input()}
-                                onFocus={e => { e.target.style.borderColor = '#005cc1'; e.target.style.background = '#fff'; }}
-                                onBlur={e => { e.target.style.borderColor = 'rgba(193,199,204,0.5)'; e.target.style.background = '#f8fbfc'; }}
-                            />
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                placeholder="Email Address" style={S.input()}
-                                onFocus={e => { e.target.style.borderColor = '#005cc1'; e.target.style.background = '#fff'; }}
-                                onBlur={e => { e.target.style.borderColor = 'rgba(193,199,204,0.5)'; e.target.style.background = '#f8fbfc'; }}
-                            />
-                            <button type="submit" disabled={loading} style={{
-                                marginTop: 4, padding: 16,
-                                background: loading ? '#3b82f6aa' : '#005cc1',
-                                color: '#fff', border: 'none', borderRadius: 12,
-                                fontSize: 14, fontWeight: 700, letterSpacing: '0.02em',
-                                cursor: loading ? 'not-allowed' : 'pointer',
-                                fontFamily: 'Inter, sans-serif', transition: 'background 0.2s',
-                            }}
-                                onMouseOver={e => { if (!loading) e.currentTarget.style.background = '#004aa3'; }}
-                                onMouseOut={e => { if (!loading) e.currentTarget.style.background = '#005cc1'; }}
-                            >
-                                {loading ? 'Signing in…' : 'Launch Explorer →'}
-                            </button>
-                        </form>
-                    </div>
-                    <style>{`
-                        @keyframes modalIn {
-                            from { opacity:0; transform:scale(0.95) translateY(10px); }
-                            to   { opacity:1; transform:scale(1) translateY(0); }
-                        }
-                    `}</style>
-                </div>
-            )}
-
             {/* ── NAV ───────────────────────────────────── */}
             <nav style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -169,7 +74,7 @@ const LandingPage: React.FC = () => {
                     <div style={{ display: 'flex', gap: 24, fontSize: 13, fontWeight: 500, color: '#1f6870', alignItems: 'center' }}>
                         <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(featRef)}>Features</span>
                         <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(howRef)}>How It Works</span>
-                        <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(authRef)}>Get Started</span>
+                        <span style={{ cursor: 'pointer' }} onClick={() => handleCTA()}>Get Started</span>
                     </div>
                 </div>
 
@@ -206,7 +111,7 @@ const LandingPage: React.FC = () => {
                 </p>
                 <div style={{ display: 'flex', gap: 14, marginTop: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
                     <button style={{ ...S.btn(true), padding: '15px 32px', fontSize: 14, boxShadow: '0 8px 20px rgba(0,0,0,0.12)' }} onClick={handleCTA}>
-                        Sign In →
+                        Open Explorer →
                     </button>
                     <button style={{ ...S.btn(false), padding: '15px 32px', fontSize: 14 }} onClick={() => scrollTo(howRef)}>
                         See How It Works
@@ -313,57 +218,6 @@ const LandingPage: React.FC = () => {
                 </div>
             </section>
 
-            {/* ── AUTH SECTION ──────────────────────────── */}
-            <section ref={authRef} style={{
-                background: '#fff', padding: '90px 20px',
-                borderTop: '1px solid rgba(0,57,62,0.06)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center'
-            }}>
-                <div style={{ maxWidth: 440, width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <h2 style={{ fontSize: '2.2rem', fontWeight: 700, letterSpacing: '-0.03em', margin: '0 0 12px 0' }}>
-                            Ready to Explore?
-                        </h2>
-                        <p style={{ fontSize: 15, color: '#1f6870', margin: 0 }}>
-                            Enter your details below to start your session.
-                        </p>
-                    </div>
-
-                    <div style={{ width: '100%' }}>
-                        {error && (
-                            <div style={{ padding: 14, background: '#fff1f2', color: '#e11d48', borderRadius: 12, fontSize: 13, fontWeight: 500, marginBottom: 20 }}>
-                                {error}
-                            </div>
-                        )}
-                        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                            <input type="text" value={name} onChange={e => setName(e.target.value)}
-                                placeholder="Full Name" style={S.input()}
-                                onFocus={e => { e.target.style.borderColor = '#005cc1'; e.target.style.background = '#fff'; }}
-                                onBlur={e => { e.target.style.borderColor = 'rgba(193,199,204,0.5)'; e.target.style.background = '#f8fbfc'; }}
-                            />
-                            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
-                                placeholder="Email Address" style={S.input()}
-                                onFocus={e => { e.target.style.borderColor = '#005cc1'; e.target.style.background = '#fff'; }}
-                                onBlur={e => { e.target.style.borderColor = 'rgba(193,199,204,0.5)'; e.target.style.background = '#f8fbfc'; }}
-                            />
-                                <button type="submit" disabled={loading} style={{
-                                    marginTop: 6, padding: 17,
-                                    background: loading ? '#3b82f6aa' : '#005cc1',
-                                    color: '#fff', border: 'none', borderRadius: 12,
-                                    fontSize: 14, fontWeight: 700, letterSpacing: '0.02em',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    fontFamily: 'Inter, sans-serif', transition: 'background 0.2s',
-                                }}
-                                    onMouseOver={e => { if (!loading) e.currentTarget.style.background = '#004aa3'; }}
-                                    onMouseOut={e => { if (!loading) e.currentTarget.style.background = '#005cc1'; }}
-                                >
-                                    {loading ? 'Signing in…' : 'Launch Explorer →'}
-                                </button>
-                            </form>
-                        </div>
-                </div>
-            </section>
-
             {/* ── FOOTER ────────────────────────────────── */}
             <footer style={{
                 padding: '32px 60px', background: '#000', color: '#ffffff',
@@ -378,7 +232,7 @@ const LandingPage: React.FC = () => {
                 <div style={{ display: 'flex', gap: 20, fontSize: 12, color: 'rgba(255,255,255,0.5)' }}>
                     <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(featRef)}>Features</span>
                     <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(howRef)}>How It Works</span>
-                    <span style={{ cursor: 'pointer' }} onClick={() => scrollTo(authRef)}>Get Started</span>
+                    <span style={{ cursor: 'pointer' }} onClick={() => handleCTA()}>Get Started</span>
                 </div>
             </footer>
 

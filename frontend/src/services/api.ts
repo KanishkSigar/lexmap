@@ -24,29 +24,6 @@ export const uploadPDF = async (file: File): Promise<PdfExtractResult> => {
     return extractPdfText(file);
 };
 
-// ── Client-side "auth" — soft gate, no real JWT ─────────────
-// Kept as async to preserve the existing UI flow.
-export const login = async (name: string, email: string) => {
-    if (!name?.trim() || !email?.trim()) {
-        throw new Error('Name and email are required.');
-    }
-    const user = { name: name.trim(), email: email.trim() };
-    // Token is a client-only marker — no security claim.
-    const token = btoa(`${user.email}:${Date.now()}`);
-    return { token, user };
-};
-
-export const verifyToken = async (token: string) => {
-    if (!token) throw new Error('No token');
-    // Client-side check only: token exists and decodes.
-    try {
-        atob(token);
-        return { valid: true };
-    } catch {
-        throw new Error('Invalid token');
-    }
-};
-
 // ── Chat (Lex AI) — hits the Vercel serverless function ─────
 export const sendChatMessage = async (
     messages: { role: 'user' | 'assistant'; content: string }[],

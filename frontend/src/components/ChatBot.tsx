@@ -16,6 +16,8 @@ const ChatBot: React.FC<ChatBotProps> = ({ judgmentText, graphData }) => {
     const [messages, setMessages] = useState<Message[]>([
         { role: 'assistant', content: "Hello! I'm Lex, your AI legal assistant. Load a judgment in the explorer and I'll be able to answer questions about it — or ask me anything about law." }
     ]);
+    const [sharedJudgment, setSharedJudgment] = useState<string | undefined>();
+    const shareContext = Boolean(judgmentText && sharedJudgment === judgmentText);
     const [input, setInput]       = useState('');
     const [loading, setLoading]   = useState(false);
     const messagesEndRef          = useRef<HTMLDivElement>(null);
@@ -71,7 +73,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ judgmentText, graphData }) => {
 
         try {
             // Always send context — backend handles empty gracefully
-            const context = { judgmentText, graphData };
+            const context = shareContext ? { judgmentText, graphData } : undefined;
             const data = await sendChatMessage(newMessages, context);
             setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
         } catch {
@@ -150,7 +152,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ judgmentText, graphData }) => {
                         }}>
                             <span style={{ fontSize: 11 }}>✅</span>
                             <span style={{ fontSize: 11, color: '#15803d', fontWeight: 600 }}>
-                                Explorer context active
+                                Judgment available to share
                             </span>
                             <span style={{ fontSize: 11, color: '#41848c', marginLeft: 'auto' }}>
                                 {[hasText && 'text', hasGraph && 'graph'].filter(Boolean).join(' + ')}
@@ -213,6 +215,14 @@ const ChatBot: React.FC<ChatBotProps> = ({ judgmentText, graphData }) => {
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {judgmentText && (
+                        <label style={{ padding: '8px 14px', fontSize: 12, color: '#00393e' }}>
+                            <input type="checkbox" checked={shareContext}
+                                onChange={event => setSharedJudgment(event.target.checked ? judgmentText : undefined)} />
+                            {' Include this judgment and graph when sending messages to Lex and its model provider'}
+                        </label>
+                    )}
+
                     {/* Input */}
                     <div style={{
                         padding: '10px 14px', borderTop: '1px solid rgba(0,57,62,0.08)',
@@ -224,7 +234,7 @@ const ChatBot: React.FC<ChatBotProps> = ({ judgmentText, graphData }) => {
                             value={input}
                             onChange={e => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder={hasText ? 'Ask about this judgment...' : 'Ask about cases, laws, constitution...'}
+                            placeholder={shareContext ? 'Ask about this judgment...' : 'Ask about cases, laws, constitution...'}
                             rows={1}
                             style={{
                                 flex: 1, padding: '10px 14px', borderRadius: 12,

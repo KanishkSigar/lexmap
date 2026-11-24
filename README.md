@@ -16,6 +16,10 @@
   <sub>A judgment decomposed into a typed reasoning graph — claims, reasoning, conclusions, and precedents with their relations.</sub>
 </p>
 
+Open **Explorer** to analyze text or a PDF in your browser. This workflow requires no
+account. Lex chat is optional and sends the judgment and graph only when you select
+the sharing checkbox before submitting a message.
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -55,8 +59,7 @@ Legal judgments are dense and hard to decode quickly. **LexMap** addresses this 
 | Interactive reasoning graph (React Flow + Dagre auto-layout) | Complete |
 | JSON output view with toggle | Complete |
 | Lex AI legal assistant (Groq LLM, context-aware) | Complete |
-| JWT session authentication (name + email) | Complete |
-| Protected routes with auto-redirect | Complete |
+| Account-free browser workflow | Complete |
 | PDF text extraction (pdfjs-dist) | Complete |
 | Health check endpoint | Complete |
 
