@@ -4,6 +4,7 @@ export interface ReasoningNode {
     id: string;
     type: NodeType;
     text: string;
+    source?: { start: number; end: number };
     metadata?: Record<string, unknown>;
 }
 
@@ -16,13 +17,14 @@ const patterns: Record<NodeType, RegExp> = {
 
 const abbreviations = /\b(vs|v\.s|no|art|sec|cl|para|p|vol|ed|approx|dept|govt|hon|sr|jr|dr|mr|mrs|ms)\./gi;
 
-function splitSentences(text: string): string[] {
-    const placeholder = '<<<DOT>>>';
-    const protectedText = text.replace(abbreviations, (m) => m.replace('.', placeholder));
-    const raw = protectedText.match(/[^.!?]+[.!?]+/g) || [text];
-    return raw
-        .map((s) => s.replace(new RegExp(placeholder, 'g'), '.').trim())
-        .filter(Boolean);
+function splitSentences(text: string) {
+    const protectedText = text.replace(abbreviations, (match) => match.replace(/\./g, '·'));
+    return Array.from(protectedText.matchAll(/[^.!?]+(?:[.!?]+|$)/g), (match) => {
+        const raw = text.slice(match.index, match.index + match[0].length);
+        const clean = raw.trim();
+        const start = match.index + raw.length - raw.trimStart().length;
+        return { text: clean, start, end: start + clean.length };
+    });
 }
 
 export function extractNodes(text: string): ReasoningNode[] {
@@ -30,7 +32,7 @@ export function extractNodes(text: string): ReasoningNode[] {
     const nodes: ReasoningNode[] = [];
 
     sentences.forEach((sentence, index) => {
-        const clean = sentence.trim();
+        const clean = sentence.text;
         if (!clean || clean.length < 10) return;
 
         let type: NodeType | null = null;
@@ -39,7 +41,7 @@ export function extractNodes(text: string): ReasoningNode[] {
         else if (patterns.claim.test(clean)) type = 'claim';
         else if (patterns.precedent.test(clean)) type = 'precedent';
 
-        if (type) nodes.push({ id: `node-${index}`, type, text: clean });
+        if (type) nodes.push({ id: `node-${index}`, type, text: clean, source: { start: sentence.start, end: sentence.end } });
     });
 
     return nodes;

@@ -10,11 +10,13 @@ import ReactFlow, {
 import dagre from 'dagre';
 import 'reactflow/dist/style.css';
 
+import type { CaseGraph } from '../lib/graphBuilder';
+import type { NodeType, ReasoningNode } from '../lib/reasoningEngine';
+
 interface GraphVisualizerProps {
-    graphData: {
-        nodes: { id: string; type: string; text: string }[];
-        edges: { source: string; target: string; relation: string }[];
-    } | null;
+    graphData: CaseGraph | null;
+    onSource: (source: NonNullable<ReasoningNode['source']>) => void;
+    onTypeChange: (id: string, type: NodeType) => void;
 }
 
 const NODE_W = 200;
@@ -128,7 +130,12 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 };
 
 // ── Detail panel ──────────────────────────────────────────
-const DetailPanel = ({ node, onClose }: { node: { type: string; text: string } | null; onClose: () => void }) => {
+const DetailPanel = ({ node, onClose, onSource, onTypeChange }: {
+    node: ReasoningNode | null;
+    onClose: () => void;
+    onSource: GraphVisualizerProps['onSource'];
+    onTypeChange: GraphVisualizerProps['onTypeChange'];
+}) => {
     if (!node) return null;
     const s = TYPE_STYLES[node.type] || TYPE_STYLES.claim;
     return (
@@ -160,21 +167,30 @@ const DetailPanel = ({ node, onClose }: { node: { type: string; text: string } |
                 <p style={{ fontSize: 13, color: '#00393e', lineHeight: 1.7, margin: 0 }}>
                     {node.text}
                 </p>
+                {node.source && <button type="button" onClick={() => onSource(node.source!)}>Show in source</button>}
+                <label style={{ display: 'block', marginTop: 8 }}>
+                    Node type{' '}
+                    <select value={node.type} onChange={event => onTypeChange(node.id, event.target.value as NodeType)}>
+                        {Object.entries(TYPE_STYLES).map(([type, style]) =>
+                            <option key={type} value={type}>{style.label}</option>,
+                        )}
+                    </select>
+                </label>
             </div>
         </div>
     );
 };
 
 // ── Inner component ───────────────────────────────────────
-const GraphInner: React.FC<GraphVisualizerProps> = ({ graphData }) => {
+const GraphInner: React.FC<GraphVisualizerProps> = ({ graphData, onSource, onTypeChange }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-    const [selected, setSelected]          = useState<{ type: string; text: string } | null>(null);
+    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const selected = graphData?.nodes.find(node => node.id === selectedId) ?? null;
     const { fitView } = useReactFlow();
 
     useEffect(() => {
         if (!graphData) return;
-        setSelected(null);
 
         const rfNodes: Node[] = graphData.nodes.map(n => ({
             id: n.id, type: 'customNode', position: { x: 0, y: 0 },
@@ -200,7 +216,7 @@ const GraphInner: React.FC<GraphVisualizerProps> = ({ graphData }) => {
     }, [graphData, setNodes, setEdges, fitView]);
 
     const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
-        setSelected({ type: node.data.nodeType, text: node.data.fullText });
+        setSelectedId(node.id);
     }, []);
 
     if (!graphData) return null;
@@ -213,7 +229,7 @@ const GraphInner: React.FC<GraphVisualizerProps> = ({ graphData }) => {
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 onNodeClick={onNodeClick}
-                onPaneClick={() => setSelected(null)}
+                onPaneClick={() => setSelectedId(null)}
                 fitView fitViewOptions={{ padding: 0.18 }}
                 minZoom={0.1} maxZoom={3}
                 zoomOnScroll panOnScroll={false}
@@ -230,7 +246,7 @@ const GraphInner: React.FC<GraphVisualizerProps> = ({ graphData }) => {
                 <Background variant={BackgroundVariant.Dots} gap={24} size={1} color="#d1f5fa" />
             </ReactFlow>
 
-            <DetailPanel node={selected} onClose={() => setSelected(null)} />
+            <DetailPanel node={selected} onSource={onSource} onTypeChange={onTypeChange} onClose={() => setSelectedId(null)} />
 
             <style>{`
                 @keyframes panelIn {
@@ -242,9 +258,9 @@ const GraphInner: React.FC<GraphVisualizerProps> = ({ graphData }) => {
     );
 };
 
-const GraphVisualizer: React.FC<GraphVisualizerProps> = ({ graphData }) => (
+const GraphVisualizer: React.FC<GraphVisualizerProps> = (props) => (
     <ReactFlowProvider>
-        <GraphInner graphData={graphData} />
+        <GraphInner {...props} />
     </ReactFlowProvider>
 );
 

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import NodeLegend from './NodeLegend';
 import { uploadPDF } from '../services/api';
 
@@ -7,10 +7,11 @@ interface InputSectionProps {
     setInputText: (text: string) => void;
     onProcess: () => void;
     loading: boolean;
+    passage?: { start: number; end: number };
 }
 
 const InputSection: React.FC<InputSectionProps> = ({
-    inputText, setInputText, onProcess, loading
+    inputText, setInputText, onProcess, loading, passage
 }) => {
     const fileInputRef                = useRef<HTMLInputElement>(null);
     const [pdfLoading, setPdfLoading] = useState(false);
@@ -19,6 +20,18 @@ const InputSection: React.FC<InputSectionProps> = ({
     const [pdfPages, setPdfPages]     = useState<number | null>(null);
     const [showText, setShowText]     = useState(false);
     const [dragging, setDragging]     = useState(false);
+
+    const textRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (!passage) return;
+        if (!textRef.current) {
+            setShowText(true);
+            return;
+        }
+        textRef.current.focus();
+        textRef.current.setSelectionRange(passage.start, passage.end);
+    }, [passage, showText, inputText]);
 
     const handleFile = async (file: File) => {
         setPdfError(null);
@@ -33,7 +46,7 @@ const InputSection: React.FC<InputSectionProps> = ({
             setInputText(data.text);
             setPdfPages(data.pages);
         } catch (err: any) {
-            setPdfError(err.response?.data?.error || 'Failed to extract text from PDF.');
+            setPdfError(err.message || 'Failed to extract text from PDF.');
             setPdfFile(null);
         } finally {
             setPdfLoading(false);
@@ -188,9 +201,10 @@ const InputSection: React.FC<InputSectionProps> = ({
                     <div className="textarea-wrapper">
                         <textarea
                             id="legal-text-input"
+                            ref={textRef}
                             className="legal-textarea"
                             value={inputText}
-                            onChange={e => { setInputText(e.target.value); if (pdfFile) clearPdf(); }}
+                            onChange={e => { setInputText(e.target.value); if (pdfFile) { setPdfFile(null); setPdfPages(null); } }}
                             placeholder="Paste legal judgment text here…&#10;&#10;The system will extract claims, reasoning, precedents, and conclusions automatically."
                         />
                     </div>

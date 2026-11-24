@@ -4,16 +4,19 @@ import InputSection      from './components/InputSection';
 import ResultSection     from './components/ResultSection';
 import GraphVisualizer   from './components/GraphVisualizer';
 import ChatBot           from './components/ChatBot';
+import type { NodeType, ReasoningNode } from './lib/reasoningEngine';
+import { buildGraph, type CaseGraph } from './lib/graphBuilder';
 import { processText }   from './services/api';
 
 function MainApp() {
     // ── Core state ──────────────────────────────────────
     const [inputText,  setInputText]  = useState<string>('');
-    const [graphData,  setGraphData]  = useState<any>(null);
+    const [graphData,  setGraphData]  = useState<CaseGraph | null>(null);
     const [loading,    setLoading]    = useState<boolean>(false);
     const [error,      setError]      = useState<string | null>(null);
     const [viewMode,   setViewMode]   = useState<'json' | 'graph'>('graph');
 
+    const [passage, setPassage] = useState<ReasoningNode["source"]>();
     const navigate = useNavigate();
 
     // ── Process text ─────────────────────────────────────
@@ -29,6 +32,12 @@ function MainApp() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const correctNode = (id: string, type: NodeType) => {
+        setGraphData(current => current && buildGraph(current.nodes.map(node =>
+            node.id === id ? { ...node, type } : node,
+        )));
     };
 
     return (
@@ -85,7 +94,12 @@ function MainApp() {
                 {/* Input panel */}
                 <InputSection
                     inputText={inputText}
-                    setInputText={setInputText}
+                    setInputText={text => {
+                        setInputText(text);
+                        setGraphData(null);
+                        setPassage(undefined);
+                    }}
+                    passage={passage}
                     onProcess={handleProcess}
                     loading={loading}
                 />
@@ -99,7 +113,7 @@ function MainApp() {
                     )}
 
                     <ResultSection graphData={graphData} viewMode={viewMode}>
-                        <GraphVisualizer graphData={graphData} />
+                        <GraphVisualizer graphData={graphData} onSource={source => setPassage({ ...source })} onTypeChange={correctNode} />
                     </ResultSection>
                 </div>
             </main>
